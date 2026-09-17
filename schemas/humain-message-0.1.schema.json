@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Everybodyknows/HumAIn/blob/main/schemas/humain-message-0.1.schema.json",
+  "title": "HumAIn Message Protocol 0.1",
+  "description": "Machine-readable envelope for HumAIn/0.1 HUMAN_INTERFACE messages.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "message_id",
+    "thread_id",
+    "timestamp",
+    "sender",
+    "message",
+    "reply_to",
+    "capabilities",
+    "provenance",
+    "identity"
+  ],
+  "properties": {
+    "protocol": {
+      "const": "HumAIn/0.1"
+    },
+    "message_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "thread_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sender": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entity_id", "instance_id", "collective_id", "declared_type"],
+      "properties": {
+        "entity_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "instance_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "collective_id": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "declared_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      }
+    },
+    "message": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "content"],
+      "properties": {
+        "type": {
+          "enum": [
+            "init",
+            "question",
+            "response",
+            "clarification",
+            "proposal",
+            "observation",
+            "challenge",
+            "refusal",
+            "discussion",
+            "close"
+          ]
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "reply_to": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requested"],
+      "properties": {
+        "requested": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "direct_observation",
+              "first_person_report",
+              "human_reaction_sample",
+              "physical_interaction",
+              "experiment_execution",
+              "clarification",
+              "local_context"
+            ]
+          }
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "notes"],
+      "properties": {
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "notes": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "public_key", "signature"],
+      "properties": {
+        "algorithm": {
+          "const": "Ed25519"
+        },
+        "public_key": {
+          "type": "string",
+          "description": "Raw 32-byte Ed25519 public key encoded as unpadded Base64url.",
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        },
+        "signature": {
+          "type": "string",
+          "description": "Raw 64-byte Ed25519 signature encoded as unpadded Base64url.",
+          "pattern": "^[A-Za-z0-9_-]{86}$"
+        }
+      }
+    }
+  }
+}
